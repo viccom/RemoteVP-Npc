@@ -20,3 +20,7 @@ vnet/
 venv36/
 vserial/
 logs/
+RemoteVP-Npc.spec
+__pycache__/
+_compile_to_exe.cmd
+start.sh
