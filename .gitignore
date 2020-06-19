@@ -16,8 +16,8 @@ dist/
 helper/__pycache__/
 html/static/fonts/
 nssm_service.exe
-vnet/
 venv36/
+vnet/
 vserial/
 logs/
 RemoteVP-Npc.spec
