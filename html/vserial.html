@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RemoteVP - 运行状态</title>
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+    <link rel="icon" href="static/imgs/favicon.ico">
+    <link rel="stylesheet" href="static/mdui/css/mdui.min.css">
+    <style>
+
+        .doc-example {
+            position: relative;
+            margin-bottom: 2.6em;
+        }
+
+        .doc-example-tools {
+            position: absolute;
+            z-index: 99;
+            right: 20px;
+            top: 20px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-transition: top .3s;
+            -moz-transition: top .3s;
+            -ms-transition: top .3s;
+            -o-transition: top .3s;
+            transition: top .3s;
+        }
+        .doc-example-demo {
+            padding: 0;
+            -webkit-transition: padding .3s;
+            -moz-transition: padding .3s;
+            -ms-transition: padding .3s;
+            -o-transition: padding .3s;
+            transition: padding .3s;
+        }
+        .doc-example-demo:after {
+            clear: both;
+            display: table;
+            content: ' ';
+        }
+        .doc-example-demo-label {
+            display: none;
+            box-sizing: border-box;
+            width: 100%;
+            line-height: 1;
+            padding: 9px 14px;
+            color: rgba(0, 0, 0, 0.38);
+            font-weight: 700;
+            font-size: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 3px 3px 0 0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .mdui-menu-cascade {
+            width: 168px;
+        }
+        pre {
+            margin: 0px;
+            padding: 5px;
+            width: 100%;
+            white-space: pre-wrap; /* css-3 */
+            white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+            white-space: -o-pre-wrap; /* Opera 7 */
+            word-wrap: break-word; /* Internet Explorer 5.5+ */
+        }
+    </style>
+
+</head>
+
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-light-blue mdui-loaded mdui-drawer-body-left">
+
+    <!--顶部栏 start-->
+    <header class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-theme">
+            <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+                  mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+            <a href="./" class="mdui-typo-headline mdui-hidden-xs">Control Pannel</a>
+            <span class="mdui-typo-title">虚拟串口</span>
+            <div class="mdui-toolbar-spacer"></div>
+
+            <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white  mdui-color-green vnetMess" mdui-tooltip="{content: 'API消息'}">
+                <i class="mdui-icon material-icons">message</i>
+            </button>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white  vnetNotie" mdui-tooltip="{content: '广播消息'}">
+                <i class="mdui-icon material-icons">notifications_none</i>
+            </button>
+            <button class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white refresh" mdui-tooltip="{content: '刷新'}">
+                <i class="mdui-icon material-icons">refresh</i>
+            </button>
+
+        </div>
+
+    </header>
+    <!--顶部栏 end-->
+
+    <!--左侧导航 start-->
+    <div class="mdui-drawer" id="main-drawer">
+        <div class="mdui-list" mdui-collapse="{accordion: true}">
+            <div class="mdui-collapse-item mdui-collapse-item-open">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">settings</i>
+                    <div class="mdui-list-itaem-content">远程编程</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vnet" class="mdui-list-item mdui-ripple home-menu1"
+                          data-id="home-menu1">虚拟网络</a>
+                    <a href="/vserial" class="mdui-list-item mdui-ripple home-menu2 mdui-list-item-active" data-id="home-menu2">虚拟串口</a>
+                </div>
+            </div>
+            <!--</div>-->
+
+        </div>
+
+
+    </div>
+    <!--左侧导航 end-->
+
+    <!--主视图 Start-->
+    <div class="mdui-container" style="margin-top: 10px; padding: 0px">
+
+        <div class="mdui-row home-menu1 ">
+            <div class="mdui-panel" style="margin-bottom: 10px; padding: 0px" mdui-panel>
+                <div class="mdui-panel-item" id="item-1">
+                    <div class="mdui-panel-item-header mdui-color-grey-100">
+                        <div class="mdui-panel-item-title">网关列表：</div>
+                        <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <div class="mdui-panel-item-body" style="margin: 0px; padding: 0px">
+                        <div style="max-height: 350px; overflow:auto; margin-top: 10px; padding: 0px">
+                            <table class="mdui-table gatelist_table">
+                                <thead class="mdui-color-grey-100">
+                                <tr>
+                                    <th width="35%"><span>名称</span></th>
+                                    <th width="35%"><span>序号</span></th>
+                                    <th width="30%"><span>状态</span></th>
+                                </tr>
+                                </thead>
+                                <tbody style="cursor: pointer">
+                                <tr>
+                                    <td>---</td>
+                                    <td>---</td>
+                                    <td>---</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--面板1 Start-->
+        <div class="mdui-row home-menu1 ">
+            <!--     状态栏       -->
+            <div class="mdui-table-fluid" style="margin-bottom: 10px; padding: 0px">
+                <div>
+                    <table class="mdui-table mdui-color-grey-300 vserialInfo" style="margin: 0; padding: 0">
+                        <tbody>
+                        <tr>
+                            <td width="10%">序号：
+                                <button class="mdui-btn mdui-btn-icon gateReady" mdui-tooltip="{content: '刷新'}">
+                                    <i class="mdui-icon material-icons">refresh</i>
+                                </button></td>
+                            <td width="20%"><span class="dest_sn"></span></td>
+                            <td width="10%">状态：</td>
+                            <td width="8%"><span class="gate_status"></span></td>
+                            <td width="15%">网关Vser环境：</td>
+                            <td width="8%"><span class="gate_ready"></span></td>
+                            <td width="15%">本地Vser环境：</td>
+                            <td width="8%"><span class="local_ready"></span></td>
+                            <td width="6%"><button type="button" class="mdui-btn  mdui-btn-icon mqtt-connect-btn"><i class="mdui-icon material-icons mdui-color-grey">highlight</i></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mdui-table-fluid">
+                <table class="mdui-table user-config">
+                    <tbody>
+                    <tr>
+                        <td>NPS服务器：</td>
+                        <td><input class="mdui-textfield-input" name="npsHost" type="text" value=""></td>
+                        <td>NPS用户：</td>
+                        <td><input class="mdui-textfield-input" name="npsUser" type="text" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>网关串口：</td>
+                        <td>
+                            <select class="mdui-select gate_com">
+                              <option value="com1" selected>COM1</option>
+                              <option value="com2">COM2</option>
+                            </select>
+                        </td>
+                        <td>授权：</td>
+                        <td><input class="mdui-textfield-input" name="accesskey" type="text"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-xs-12">
+                                    <div class="mdui-chip" onclick="start_vserial()" mdui-tooltip="{content: '启动'}">
+                                        <span class="mdui-chip-icon mdui-color-grey start_vserial">
+                                            <i class="mdui-icon material-icons">play_arrow</i></span>
+                                        <span class="mdui-chip-title">启动</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-xs-12 mdui-text-center">
+                                    <div class="mdui-chip" onclick="stop_vserial()" mdui-tooltip="{content: '停止'}">
+                                        <span class="mdui-chip-icon mdui-color-grey stop_vserial"><i
+                                                class="mdui-icon material-icons">stop</i></span>
+                                        <span class="mdui-chip-title">停止</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-xs-12 mdui-text-center">
+                                    <div class="mdui-chip" onclick="load_user_config()" mdui-tooltip="{content: '加载'}">
+                                        <span class="mdui-chip-icon mdui-color-green load_config">
+                                            <i class="mdui-icon material-icons">open_in_browser</i>
+                                        </span>
+                                        <span class="mdui-chip-title">加载配置</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-xs-9 mdui-text-center">
+                                    <div class="mdui-chip" onclick="save_user_config()" mdui-tooltip="{content: '保存'}">
+                                        <span class="mdui-chip-icon mdui-color-green save_config"><i
+                                                class="mdui-icon material-icons">save</i></span>
+                                        <span class="mdui-chip-title">保存配置</span>
+                                    </div>
+                                </div>
+                                <div class="mdui-col-xs-3 mdui-text-center">
+                                    <div class="mdui-chip" onclick="remove_user_config()" mdui-tooltip="{content: '移除本地保存'}">
+                                        <span class="mdui-chip-icon mdui-color-green save_config">
+                                            <i class="mdui-icon material-icons">delete_forever</i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+                <table class="mdui-table">
+                    <tbody>
+                    <tr>
+                        <td>本地 Vserial 服务：</td>
+                        <td><span class="localvserialstatus"></span></td>
+                        <td>网关 Vserial 服务：</td>
+                        <td><span class="gatevserialstatus"></span></td>
+                    </tr>
+                    <tr>
+                        <td>NPS 隧道服务：</td>
+                        <td><span class="cloudclientstatus"></span></td>
+                        <td>隧道连接状态：</td>
+                        <td><span class="cloudclientinfo"></span></td>
+                    </tr>
+                    <tr>
+                        <td>网关串口：</td>
+                        <td><span class="gatecom"></span><span class="gatecomParas"></span></td>
+                        <td>本地串口：</td>
+                        <td><span class="localcom"></span><span class="localcomParas"></span></td>
+                    </tr>
+                    <tr>
+                        <td>本地串口状态：：</td>
+                        <td><span class="localcomstatus"></span></td>
+                        <td>本地串口程序：</td>
+                        <td><span class="localcomproc"></span></td>
+                    </tr>
+                    <tr>
+                        <td>串口接收字节：：</td>
+                        <td><span class="localcom_recv"></span></td>
+                        <td>串口发送字节：</td>
+                        <td><span class="localcom_send"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+
+                <table class="mdui-table vserialNotie mdui-hidden" style="margin-top: 0px; padding: 0px">
+                    <thead class="mdui-color-grey-100">
+                        <tr>
+                        <th width="15%"><span>时间</span></th>
+                        <th width="85%"><span>内容</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td><span class="Notietime">---------</span></td>
+                        <td><pre class="NotiejsondataBox">---------</pre></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+        <!--面板1 Start-->
+
+        <div class="mdui-row home-menu1 APIRESULT">
+            <div class="mdui-panel" style="margin-bottom: 10px; padding: 0px" id="panel2" mdui-panel>
+                <div class="mdui-panel-item mdui-panel-item-open">
+                    <div class="mdui-panel-item-header mdui-color-grey-100">
+                        <div class="mdui-panel-item-title">API RESULT：</div>
+                        <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <div class="mdui-panel-item-body" style="margin: 0px; padding: 0px">
+                        <div style="margin-top: 10px; padding: 0px">
+                            <table class="mdui-table apiResult" style="margin-top: 0px; padding: 0px">
+                                <thead class="mdui-color-grey-100">
+                                    <tr>
+                                    <th width="15%"><span>时间</span></th>
+                                    <th width="85%"><span>内容</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    <td><span class="apitime">---------</span></td>
+                                    <td><pre class="jsondataBox">---------</pre></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--主视图 End-->
+
+    <p></p>
+
+
+
+</body>
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="static/js/jquery-3.3.1.min.js"></script>
+<script src="static/js/jquery.cookie.js"></script>
+<script src="static/js/jquery.qrcode.min.js"></script>
+<script src="static/mdui/js/mdui.min.js"></script>
+<script src="static/js/paho-mqtt-min.js"></script>
+<script src="static/userjs/base1.js"></script>
+<script type="text/javascript">
+    var jsversion = Date.parse(new Date());
+    document.write("<script type='text/javascript' src='static/userjs/mqtt-vserial.js?v="+jsversion+"'></s"+"cript>");
+    document.write("<script type='text/javascript' src='static/userjs/vserial.js?v="+jsversion+"'></s"+"cript>");
+
+    setTimeout(function () {
+        connect();
+    },600);
+
+    // JSON.stringify(res, null, "\t"); // 缩进一个tab
+    // JSON.stringify(res, null, 4);    // 缩进4个空格
+    // $("pre.jsondataBox").text(JSON.stringify(jsonstr, null, 4));
+
+    // var inst = new mdui.Panel('#panel1');
+
+    // event
+    Panelinst = new mdui.Panel('#panel');
+    Panelitem1 = document.getElementById('item-1');
+    Panelitem1.addEventListener('open.mdui.panel', function () {
+        if(vserial_is_running){
+            mdui.snackbar({
+              message: 'Vserialt运行时不允许操作！'
+            });
+            return false;
+        }
+          console.log('pannel1 open');
+          get_user_gatelist();
+    });
+</script>
+
+<script type="text/javascript">
+    $('button.mqtt-connect-btn').click(function () {
+        connectionToggle();
+        setTimeout(function () {
+            get_gatevserial_ready();
+        }, 1000);
+    });
+
+    $('button.gateReady').click(function () {
+        get_gatevserial_ready();
+    });
+
+    $('button.vnetNotie').click(function () {
+        // console.log($(this).data("id"));
+        if($(this).data("id")!=="1"){
+            $("table.vserialNotie").removeClass("mdui-hidden");
+            $(this).addClass("mdui-color-green");
+            $(this).data("id", "1")
+        }else{
+            $("table.vserialNotie").addClass("mdui-hidden");
+            $(this).removeClass("mdui-color-green");
+            $(this).data("id", "0")
+        }
+    });
+
+    $('button.vnetMess').click(function () {
+        console.log($(this).data("id"));
+        if($(this).data("id")!=="0"){
+            $("div.APIRESULT").addClass("mdui-hidden");
+            $(this).removeClass("mdui-color-green");
+            $(this).data("id", "0")
+        }else{
+            $("div.APIRESULT").removeClass("mdui-hidden");
+            $(this).addClass("mdui-color-green");
+            $(this).data("id", "1")
+
+        }
+    });
+</script>
+
+</html>

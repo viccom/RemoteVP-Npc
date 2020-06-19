@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+python-multipart
+jinja2
+aiofiles
+python-jose
+requests
+pycryptodomex
+pickledb
+hbmqtt
+paho-mqtt
+pycryptodome
+pypiwin32
+wmi
+ping3
+pyinstaller
+pyserial
