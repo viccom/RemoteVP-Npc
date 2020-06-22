@@ -40,11 +40,11 @@ class npsApiv1():
 		if not self.session:
 			self.session = self.create_session()
 		try:
-			print("@@@@@@@@@@@@@@@---------------", self.base_srv + url_path)
+			# print("@@@@@@@@@@@@@@@---------------", self.base_srv + url_path)
 			r = self.session.post(self.base_srv + url_path, allow_redirects=True, timeout=3, data=data)
-			print("@@@@@@", r.status_code, r.is_redirect, r.headers['Content-Type'])
+			# print("@@@@@@", r.status_code, r.is_redirect, r.headers['Content-Type'])
 			assert r.status_code == 200, logging.error("返回值不是期望的")
-			if r.status_code == 200 and r.headers['Content-Type'].split(";")[0] == 'application/json':
+			if r.status_code == 200:
 				try:
 					ret = r.json()
 					return ret

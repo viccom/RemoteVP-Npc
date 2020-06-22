@@ -412,7 +412,10 @@ class VSPAXManager(threading.Thread):
                         vinfo["gate_port_name"] = self.userinfo["gate_port_name"]
                         vinfo["gate_com_params"] = self.userinfo["gate_com_params"]
                         self._mqtt_stream_pub.vspax_status(handler.get_port_key(), json.dumps(vinfo))
-                        self._mqtt_stream_pub.vspax_info(handler.get_port_key(), json.dumps(self.userinfo))
+                        pubinfo = self.userinfo
+                        if pubinfo.get('vkey'):
+                            del pubinfo['vkey']
+                        self._mqtt_stream_pub.vspax_info(handler.get_port_key(), json.dumps(pubinfo))
                     except Exception as ex:
                         logging.exception(ex)
                 print(self._heartbeat_timeout - time.time())
