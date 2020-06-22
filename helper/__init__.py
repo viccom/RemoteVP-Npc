@@ -146,11 +146,11 @@ class urlCheck:
 		if self.is_domain():
 			ret = self.name
 		elif self.is_ipv4():
-			ret = self.name
+			ret = self.name.split(":")[0]
 		else:
 			parsed = urlsplit(self.name)
 			if not parsed.path == self.name:
-				ret = parsed.scheme + "://" + parsed.netloc
+				ret = parsed.netloc.split(":")[0]
 		return ret
 
 	def is_domain(self):
