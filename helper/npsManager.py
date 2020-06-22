@@ -21,24 +21,32 @@ class npsApiv1():
 		if not self.session:
 			self.session = self.create_session()
 		try:
-			r = self.session.get(self.base_srv + url_path, timeout=3)
+			r = self.session.get(self.base_srv + url_path, allow_redirects=True, timeout=3)
 			# print("@@@@@@", r.status_code, r.json())
-			assert r.status_code == 200
-			return r.json()
+			assert r.status_code == 200, logging.error("返回值不是期望的")
+			if r.status_code == 200:
+				return r.json()
+			else:
+				return {}
 		except Exception as ex:
 			logging.error(ex)
-			return None
+			return {}
 
 	def nps_api_post(self, url_path, data):
 		if not self.session:
 			self.session = self.create_session()
 		try:
-			r = self.session.post(self.base_srv + url_path, timeout=3, data=data)
-			assert r.status_code == 200
-			return r.json()
+			# print("@@@@@@@@@@@@@@@---------------", self.base_srv + url_path)
+			r = self.session.post(self.base_srv + url_path, allow_redirects=False, timeout=3, data=data)
+			# print("@@@@@@", r.status_code, r.is_redirect, r.is_permanent_redirect)
+			assert r.status_code == 200, logging.error("返回值不是期望的")
+			if r.status_code == 200:
+				return r.json()
+			else:
+				return {}
 		except Exception as ex:
 			logging.error(ex)
-			return None
+			return {}
 
 
 class npsCryp:
