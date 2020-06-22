@@ -129,12 +129,24 @@ class urlCheck:
 	def __init__(self, n):
 		self.name = n
 
-	def result(self):
+	def get_url(self):
 		ret = None
 		if self.is_domain():
 			ret = "http://" + self.name
 		elif self.is_ipv4():
 			ret = "http://" + self.name
+		else:
+			parsed = urlsplit(self.name)
+			if not parsed.path == self.name:
+				ret = parsed.scheme + "://" + parsed.netloc
+		return ret
+
+	def get_host(self):
+		ret = None
+		if self.is_domain():
+			ret = self.name
+		elif self.is_ipv4():
+			ret = self.name
 		else:
 			parsed = urlsplit(self.name)
 			if not parsed.path == self.name:

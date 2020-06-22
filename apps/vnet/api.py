@@ -83,12 +83,12 @@ def api_npstunnel(params):
 	user = params.get("user")
 	ret, ret_content = None, None
 	if host and user:
-		if not urlCheck(host).result():
+		if not urlCheck(host).get_url():
 			return failure(id, "host must be domain or ipv4 or url")
 		else:
-			APIHandler.Manager.nps_host = urlCheck(host).result()
+			APIHandler.Manager.nps_host = urlCheck(host).get_url()
 			APIHandler.Manager.userinfo['name'] = user
-			APIHandler.Manager.userinfo['tunnel_host'] = host
+			APIHandler.Manager.userinfo['tunnel_host'] = urlCheck(host).get_host()
 			ret, ret_content = APIHandler.Manager.nps_tunnel()
 	else:
 		ret_content = "params lost  host or user"
@@ -160,7 +160,7 @@ def api_start(params: vnetItem):
 	gate = params.get("gate")
 	ret, ret_content = None, None
 	if host and user and gate:
-		if not urlCheck(host).result():
+		if not urlCheck(host).get_url():
 			return failure(id, "host must be domain or ipv4 or url")
 		else:
 			vret, vret_content = APIHandler.Manager.vnet_status()
@@ -179,9 +179,9 @@ def api_start(params: vnetItem):
 				if params.get("dest_ip"):
 					if is_ipv4(params.get("dest_ip")):
 						APIHandler.Manager.userinfo['dest_ip'] = params.get("dest_ip")
-				APIHandler.Manager.nps_host = urlCheck(host).result()
+				APIHandler.Manager.nps_host = urlCheck(host).get_url()
 				APIHandler.Manager.userinfo['name'] = user
-				APIHandler.Manager.userinfo['tunnel_host'] = host
+				APIHandler.Manager.userinfo['tunnel_host'] = urlCheck(host).get_host()
 				APIHandler.Manager.userinfo['gate'] = gate
 				ret, ret_content = APIHandler.Manager.start_vnet()
 	else:

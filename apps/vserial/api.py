@@ -88,12 +88,12 @@ def api_npstunnel(params):
 	user = params.get("user")
 	ret, ret_content = None, None
 	if host and user:
-		if not urlCheck(host).result():
+		if not urlCheck(host).get_url():
 			return failure(id, "host must be domain or ipv4 or url")
 		else:
-			APIHandler.Manager.nps_host = urlCheck(host).result()
+			APIHandler.Manager.nps_host = urlCheck(host).get_url()
 			APIHandler.Manager.userinfo['name'] = user
-			APIHandler.Manager.userinfo['tunnel_host'] = host
+			APIHandler.Manager.userinfo['tunnel_host'] = urlCheck(host).get_host()
 			ret, ret_content = APIHandler.Manager.nps_tunnel()
 	else:
 		ret_content = "params lost  host or user"
@@ -175,7 +175,7 @@ def api_start(params: startItem):
 	if not port:
 		return failure(id, "params port_name lost")
 	if host and user and gate:
-		if not urlCheck(host).result():
+		if not urlCheck(host).get_url():
 			return failure(id, "host must be domain or ipv4 or url")
 		else:
 			vret, vret_content = APIHandler.Manager.vserial_status()
@@ -188,9 +188,9 @@ def api_start(params: startItem):
 					APIHandler.Manager.TRAccesskey = auth_code
 				else:
 					return failure(id, "params lost  auth_code")
-				APIHandler.Manager.nps_host = urlCheck(host).result()
+				APIHandler.Manager.nps_host = urlCheck(host).get_url()
 				APIHandler.Manager.userinfo['name'] = user
-				APIHandler.Manager.userinfo['tunnel_host'] = host
+				APIHandler.Manager.userinfo['tunnel_host'] = urlCheck(host).get_host()
 				APIHandler.Manager.userinfo['gate'] = gate
 				APIHandler.Manager.userinfo['gate_port_name'] = port.lower()
 				ret, ret_content = APIHandler.Manager.start_vserial()
