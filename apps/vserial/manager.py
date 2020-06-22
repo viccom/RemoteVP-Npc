@@ -282,12 +282,16 @@ class VSPAXManager(threading.Thread):
                             self.add(handler)
                             return self._vserial_is_running, self.userinfo
                         else:
+                            self.clean_cfg()
                             return False, "下发指令到网关不正常，请检查后重试"
                     else:
+                        self.clean_cfg()
                         return False, "网关Npc服务启动不正常，请检查后重试"
                 else:
+                    self.clean_cfg()
                     return False, "网关不在线，或你无权访问此网关，请检查后重试"
             else:
+                self.clean_cfg()
                 return False, "NPS连接错误或无此用户 {0} ".format(self.userinfo.get("name"))
         else:
             return False, "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(self.userinfo.get("name"))
@@ -308,17 +312,11 @@ class VSPAXManager(threading.Thread):
             if ret2:
                 ret1 = self.remove(self.userinfo.get("local_port_name"))
             if ret1 and ret2:
-                self._vserial_is_running = False
-                self.NPSApi = None
-                self.__auth_key = None
                 self._stop_time = time.time()
-                self.userinfo = {"name": None, "gate": None, "cid": None, "vkey": None, "client_status": None,
-                                 "client_online": None, "tunnel_alias": None, "tid": None, "tunnel_host": None,
-                                 "tunnel_port": None, "tunnel_Target": "127.0.0.1:4678", "tunnel_status": None,
-                                 "tunnel_online": None, "gate_com_params": None, "gate_npc_status": None,
-                                 "gate_port_name": None, "local_port_name": None, "info": None}
+                self.clean_cfg()
                 return True, "停止虚拟串口成功"
             else:
+                self.clean_cfg()
                 return False, "关闭失败"
         else:
             return False, "服务已停止"
@@ -470,3 +468,14 @@ class VSPAXManager(threading.Thread):
                 self.remove(name)
             except Exception as ex:
                 logging.exception(ex)
+
+    def clean_cfg(self):
+        self._vserial_is_running = False
+        self.NPSApi = None
+        self.nps_host = None
+        self.__auth_key = None
+        self.userinfo = {"name": None, "gate": None, "cid": None, "vkey": None, "client_status": None,
+                         "client_online": None, "tunnel_alias": None, "tid": None, "tunnel_host": None,
+                         "tunnel_port": None, "tunnel_Target": "127.0.0.1:4678", "tunnel_status": None,
+                         "tunnel_online": None, "gate_com_params": None, "gate_npc_status": None,
+                         "gate_port_name": None, "local_port_name": None, "info": None}

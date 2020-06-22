@@ -402,15 +402,20 @@ class Manager(threading.Thread):
 								self._start_time = time.time()
 								return self._vnet_is_running, self.userinfo
 							else:
+								self.clean_cfg()
 								return False, "下发指令到网关不正常，请检查后重试"
 						else:
+							self.clean_cfg()
 							return False, "网关VPN服务启动不正常，请检查后重试"
 					else:
+						self.clean_cfg()
 						return False, "无法获取正确的本地Vnet IP，网关可能未安装应用，或未开启数据上传，请检查后重试"
 				else:
 					self.services_stop()
+					self.clean_cfg()
 					return False, "网关不在线，或你无权访问此网关，请检查后重试"
 			else:
+				self.clean_cfg()
 				return False, "NPS连接错误或无此用户 {0} ".format(self.userinfo.get("name"))
 		else:
 			return False, "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(self.userinfo.get("name"))
@@ -425,15 +430,10 @@ class Manager(threading.Thread):
 			              }
 			ret, gate_stop_ret = self.TRCloudapi.post_command_to_cloud(stop_datas)
 			if services_stop_ret and ret:
-				self._vnet_is_running = False
-				self.NPSApi = None
-				self.__auth_key = None
-				self.userinfo = {"name": None, "gate": None, "cid": None, "vkey": None, "client_status": None, "client_online": None,
-            "tunnel_alias": None, "tid": None, "tunnel_host": None, "tunnel_port": None, "tunnel_Target": "127.0.0.1:665",
-            "tunnel_status": None, "tunnel_online": None, "gate_lan_ip": None, "gate_lan_netmask": None, "dest_ip": None,
-            "local_vnet_ip": None, "gate_status": None, "gate_vpn_status": None, "gate_vpn_config": None}
+				self.clean_cfg()
 				return True, {"stop_time": self._stop_time, "gate_stop_return": gate_stop_ret, "services_stop_return": services_stop_ret}
 			else:
+				self.clean_cfg()
 				return False, {"stop_time": self._stop_time, "gate_stop_return": gate_stop_ret, "services_stop_return": services_stop_ret}
 		else:
 			return False, "当前已经是停止状态"
@@ -590,5 +590,13 @@ class Manager(threading.Thread):
 		self._thread_stop = True
 		self.join()
 
-	def clean_all(self):
-		pass
+	def clean_cfg(self):
+		self._vnet_is_running = False
+		self.NPSApi = None
+		self.nps_host = None
+		self.__auth_key = None
+		self.userinfo = {"name": None, "gate": None, "cid": None, "vkey": None, "client_status": None,
+		                 "client_online": None, "tunnel_alias": None, "tid": None, "tunnel_host": None,
+		                 "tunnel_port": None, "tunnel_Target": "127.0.0.1:665", "tunnel_status": None,
+		                 "tunnel_online": None, "gate_lan_ip": None, "gate_lan_netmask": None, "dest_ip": None,
+		                 "local_vnet_ip": None, "gate_status": None, "gate_vpn_status": None, "gate_vpn_config": None}

@@ -24,8 +24,12 @@ class npsApiv1():
 			r = self.session.get(self.base_srv + url_path, allow_redirects=True, timeout=3)
 			# print("@@@@@@", r.status_code, r.json())
 			assert r.status_code == 200, logging.error("返回值不是期望的")
-			if r.status_code == 200:
-				return r.json()
+			if r.status_code == 200 and r.headers['Content-Type'].split(";")[0] == 'application/json':
+				try:
+					ret = r.json()
+					return ret
+				except Exception as eex:
+					return {}
 			else:
 				return {}
 		except Exception as ex:
@@ -36,12 +40,16 @@ class npsApiv1():
 		if not self.session:
 			self.session = self.create_session()
 		try:
-			# print("@@@@@@@@@@@@@@@---------------", self.base_srv + url_path)
-			r = self.session.post(self.base_srv + url_path, allow_redirects=False, timeout=3, data=data)
-			# print("@@@@@@", r.status_code, r.is_redirect, r.is_permanent_redirect)
+			print("@@@@@@@@@@@@@@@---------------", self.base_srv + url_path)
+			r = self.session.post(self.base_srv + url_path, allow_redirects=True, timeout=3, data=data)
+			print("@@@@@@", r.status_code, r.is_redirect, r.headers['Content-Type'])
 			assert r.status_code == 200, logging.error("返回值不是期望的")
-			if r.status_code == 200:
-				return r.json()
+			if r.status_code == 200 and r.headers['Content-Type'].split(";")[0] == 'application/json':
+				try:
+					ret = r.json()
+					return ret
+				except Exception as eex:
+					return {}
 			else:
 				return {}
 		except Exception as ex:
