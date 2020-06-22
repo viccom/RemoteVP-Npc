@@ -6,7 +6,7 @@ import uuid
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
-from helper import to_dict, success, failure, APPCtrl, is_ipv4
+from helper import to_dict, success, failure, APPCtrl, is_ipv4, urlCheck
 from cores.mqttc.pubc import MQTTStreamPubBase
 from apps.vnet import api
 from apps.vnet.pub import MQTTPub
@@ -83,10 +83,13 @@ def api_npstunnel(params):
 	user = params.get("user")
 	ret, ret_content = None, None
 	if host and user:
-		APIHandler.Manager.nps_host = "https://" + host
-		APIHandler.Manager.userinfo['name'] = user
-		APIHandler.Manager.userinfo['tunnel_host'] = host
-		ret, ret_content = APIHandler.Manager.nps_tunnel()
+		if not urlCheck(host).result():
+			return failure(id, "host must be domain or ipv4 or url")
+		else:
+			APIHandler.Manager.nps_host = urlCheck(host).result()
+			APIHandler.Manager.userinfo['name'] = user
+			APIHandler.Manager.userinfo['tunnel_host'] = host
+			ret, ret_content = APIHandler.Manager.nps_tunnel()
 	else:
 		ret_content = "params lost  host or user"
 	if ret:
@@ -157,27 +160,30 @@ def api_start(params: vnetItem):
 	gate = params.get("gate")
 	ret, ret_content = None, None
 	if host and user and gate:
-		vret, vret_content = APIHandler.Manager.vnet_status()
-		if vret:
-			str = "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(vret_content.userinfo.get("name"))
-			return failure(id, str)
+		if not urlCheck(host).result():
+			return failure(id, "host must be domain or ipv4 or url")
 		else:
-			auth_code = params.get("auth_code") or APPCtrl().get_accesskey()
-			if auth_code:
-				APIHandler.Manager.TRAccesskey = auth_code
+			vret, vret_content = APIHandler.Manager.vnet_status()
+			if vret:
+				str = "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(vret_content.userinfo.get("name"))
+				return failure(id, str)
 			else:
-				return failure(id, "params lost  auth_code")
-			if params.get("local_ip"):
-				if is_ipv4(params.get("local_ip")):
-					APIHandler.Manager.userinfo['local_vnet_ip'] = params.get("local_ip")
-			if params.get("dest_ip"):
-				if is_ipv4(params.get("dest_ip")):
-					APIHandler.Manager.userinfo['dest_ip'] = params.get("dest_ip")
-			APIHandler.Manager.nps_host = "https://" + host
-			APIHandler.Manager.userinfo['name'] = user
-			APIHandler.Manager.userinfo['tunnel_host'] = host
-			APIHandler.Manager.userinfo['gate'] = gate
-			ret, ret_content = APIHandler.Manager.start_vnet()
+				auth_code = params.get("auth_code") or APPCtrl().get_accesskey()
+				if auth_code:
+					APIHandler.Manager.TRAccesskey = auth_code
+				else:
+					return failure(id, "params lost  auth_code")
+				if params.get("local_ip"):
+					if is_ipv4(params.get("local_ip")):
+						APIHandler.Manager.userinfo['local_vnet_ip'] = params.get("local_ip")
+				if params.get("dest_ip"):
+					if is_ipv4(params.get("dest_ip")):
+						APIHandler.Manager.userinfo['dest_ip'] = params.get("dest_ip")
+				APIHandler.Manager.nps_host = urlCheck(host).result()
+				APIHandler.Manager.userinfo['name'] = user
+				APIHandler.Manager.userinfo['tunnel_host'] = host
+				APIHandler.Manager.userinfo['gate'] = gate
+				ret, ret_content = APIHandler.Manager.start_vnet()
 	else:
 		ret_content = "params lost  host or user or gate"
 	if ret:

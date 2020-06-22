@@ -568,6 +568,7 @@ class Manager(threading.Thread):
 		self._heartbeat_timeout = timeout + time.time()
 		alive_ret = self.keep_vnet_alive()
 		if alive_ret:
+			self.TRCloudapi.gate_enable_data_one_short(self.userinfo['gate'])
 			for i in range(4):
 				action_ret = self.TRCloudapi.get_action_result(alive_ret.get('message'))
 				if action_ret:

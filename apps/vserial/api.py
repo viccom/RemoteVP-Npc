@@ -6,7 +6,7 @@ import uuid
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
-from helper import to_dict, success, failure, APPCtrl
+from helper import to_dict, success, failure, APPCtrl, urlCheck
 from cores.mqttc.pubc import MQTTStreamPubBase
 from apps.vserial import api
 from apps.vserial.pub import MQTTPub
@@ -88,10 +88,13 @@ def api_npstunnel(params):
 	user = params.get("user")
 	ret, ret_content = None, None
 	if host and user:
-		APIHandler.Manager.nps_host = "https://" + host
-		APIHandler.Manager.userinfo['name'] = user
-		APIHandler.Manager.userinfo['tunnel_host'] = host
-		ret, ret_content = APIHandler.Manager.nps_tunnel()
+		if not urlCheck(host).result():
+			return failure(id, "host must be domain or ipv4 or url")
+		else:
+			APIHandler.Manager.nps_host = urlCheck(host).result()
+			APIHandler.Manager.userinfo['name'] = user
+			APIHandler.Manager.userinfo['tunnel_host'] = host
+			ret, ret_content = APIHandler.Manager.nps_tunnel()
 	else:
 		ret_content = "params lost  host or user"
 	if ret:
@@ -172,22 +175,25 @@ def api_start(params: startItem):
 	if not port:
 		return failure(id, "params port_name lost")
 	if host and user and gate:
-		vret, vret_content = APIHandler.Manager.vserial_status()
-		if vret:
-			str = "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(vret_content.userinfo.get("name"))
-			return failure(id, str)
+		if not urlCheck(host).result():
+			return failure(id, "host must be domain or ipv4 or url")
 		else:
-			auth_code = params.get("auth_code") or APPCtrl().get_accesskey()
-			if auth_code:
-				APIHandler.Manager.TRAccesskey = auth_code
+			vret, vret_content = APIHandler.Manager.vserial_status()
+			if vret:
+				str = "用户 {0} 正在使用中……，如需重新配置，请先停止再启动".format(vret_content.userinfo.get("name"))
+				return failure(id, str)
 			else:
-				return failure(id, "params lost  auth_code")
-			APIHandler.Manager.nps_host = "https://" + host
-			APIHandler.Manager.userinfo['name'] = user
-			APIHandler.Manager.userinfo['tunnel_host'] = host
-			APIHandler.Manager.userinfo['gate'] = gate
-			APIHandler.Manager.userinfo['gate_port_name'] = port.lower()
-			ret, ret_content = APIHandler.Manager.start_vserial()
+				auth_code = params.get("auth_code") or APPCtrl().get_accesskey()
+				if auth_code:
+					APIHandler.Manager.TRAccesskey = auth_code
+				else:
+					return failure(id, "params lost  auth_code")
+				APIHandler.Manager.nps_host = urlCheck(host).result()
+				APIHandler.Manager.userinfo['name'] = user
+				APIHandler.Manager.userinfo['tunnel_host'] = host
+				APIHandler.Manager.userinfo['gate'] = gate
+				APIHandler.Manager.userinfo['gate_port_name'] = port.lower()
+				ret, ret_content = APIHandler.Manager.start_vserial()
 	else:
 		ret_content = "params lost  host or user or gate"
 	if ret:

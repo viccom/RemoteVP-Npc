@@ -1,8 +1,11 @@
 import ctypes, sys
 import socket
 import os
+import re
 import base64
+from urllib.parse import urlsplit
 from configparser import ConfigParser
+
 
 def to_dict(str):
 	import ast
@@ -115,3 +118,41 @@ def is_ipv4(ip):
 	except socket.error:  # not a valid ip
 		return False
 	return True
+
+
+class urlCheck:
+	__pattern = re.compile(r'^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|'
+	                     r'([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|'
+	                     r'([a-zA-Z0-9][-_.a-zA-Z0-9]{0,61}[a-zA-Z0-9]))\.'
+	                     r'([a-zA-Z]{2,13}|[a-zA-Z0-9-]{2,30}.[a-zA-Z]{2,3})$')
+
+	def __init__(self, n):
+		self.name = n
+
+	def result(self):
+		ret = None
+		if self.is_domain():
+			ret = "http://" + self.name
+		elif self.is_ipv4():
+			ret = "http://" + self.name
+		else:
+			parsed = urlsplit(self.name)
+			if not parsed.path == self.name:
+				ret = parsed.scheme + "://" + parsed.netloc
+		return ret
+
+	def is_domain(self):
+		return True if self.__pattern.match(self.name) else False
+
+	def is_ipv4(self):
+		try:
+			socket.inet_pton(socket.AF_INET, (self.name))
+		except AttributeError:
+			try:
+				socket.inet_aton(self.name)
+			except socket.error:
+				return False
+			return self.name.count('.') == 3
+		except socket.error:
+			return False
+		return True
