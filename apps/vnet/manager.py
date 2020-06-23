@@ -9,7 +9,7 @@ import wmi
 import pythoncom
 import winreg
 import hashlib
-import base64
+import win32serviceutil
 from cores.log import log_set, configure_logger
 from ping3 import ping
 from conf import nps_allowed_ports
@@ -57,7 +57,7 @@ class Manager(threading.Thread):
 				os.popen(cmd)
 				time.sleep(0.05)
 
-	def check_binpath(self):
+	def check_tinc_service(self):
 		rRoot = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
 		subDir = r'Software\tinc'
 		curpath = os.getcwd()
@@ -72,8 +72,7 @@ class Manager(threading.Thread):
 		try:
 			keyHandle = winreg.OpenKey(rRoot, subDir)
 		except Exception as ex:
-			self._log(subDir + " 不存在")
-			self._log(ex)
+			self._log.error(subDir + " 不存在")
 		if not keyHandle:
 			keyHandle = winreg.CreateKey(rRoot, subDir)
 		if keyHandle:
@@ -98,9 +97,12 @@ class Manager(threading.Thread):
 					for cmd in tincinscmd:
 						os.popen(cmd)
 						time.sleep(0.1)
-					# for cmd in npcinscmd:
-					# 	os.popen(cmd)
-					# 	time.sleep(0.1)
+		try:
+			win32serviceutil.QueryServiceStatus('tinc.vnetbridge')
+		except Exception as ex:
+			for cmd in tincinscmd:
+				os.popen(cmd)
+				time.sleep(0.1)
 
 
 	@staticmethod
@@ -347,7 +349,7 @@ class Manager(threading.Thread):
 
 	def start_vnet(self):
 		if not self._vnet_is_running:
-			self.check_binpath()
+			self.check_tinc_service()
 			if not self.TRCloudapi:
 				self.TRCloudapi = CloudApiv1(self.TRAccesskey)
 			self.enable_heartbeat(True, 60)
