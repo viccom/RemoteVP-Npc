@@ -81,10 +81,7 @@ def api_load(params):
 		if config.has_option('thingscloud', 'accesskey'):
 			if len(config.get('thingscloud', 'accesskey')) == 48:
 				auth_code = base64.b64decode(config.get('thingscloud', 'accesskey').encode()).decode()
-	else:
-		return None
-	ret = {"npshost": npshost, "npsuser": npsuser, "gate": gate, "auth_code": auth_code}
-	if ret:
+		ret = {"npshost": npshost, "npsuser": npsuser, "gate": gate, "auth_code": auth_code}
 		return success(id, ret)
 	else:
 		return failure(id, "error")
