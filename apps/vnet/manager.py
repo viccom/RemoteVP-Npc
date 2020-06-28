@@ -51,7 +51,7 @@ class Manager(threading.Thread):
 		if self.userinfo['vkey']:
 			self._log.info("{0} 生成新的Npc服务".format(self.userinfo['name']))
 			npcbinpath = os.getcwd() + r"\vnet\_npc\npc.exe"
-			npcinscmd = ['sc stop Npc', npcbinpath + ' install -server=' + 'nps.dongbala.top:7088' + ' -vkey=' + self.userinfo['vkey'],
+			npcinscmd = ['sc stop Npc', npcbinpath + ' install -server=' + self.userinfo['tunnel_host'] + ':7088' + ' -vkey=' + self.userinfo['vkey'],
 			             'sc config Npc start= demand']
 			for cmd in npcinscmd:
 				os.popen(cmd)
