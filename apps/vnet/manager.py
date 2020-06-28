@@ -274,20 +274,20 @@ class Manager(threading.Thread):
 			if val != "RUNNING":
 				self._service_is_running = False
 				break
+			else:
+				self._service_is_running = True
 
 	def services_start(self):
 		if not self._service_is_running:
 			services_start = 0
 			for s in self._dest_services:
+				time.sleep(1)
 				cmd1 = 'sc start ' + s + '|find /I "STATE"'
 				cmd_ret = os.popen(cmd1).read().strip()
-				time.sleep(0.1)
 				if cmd_ret:
 					self._log.info(s + ' is starting!')
 					services_start = services_start + 1
-					time.sleep(1)
 				else:
-					pass
 					self._log.error(s + ' start failed! please retry!')
 			if services_start == 2:
 				self._service_is_running = True
@@ -297,9 +297,14 @@ class Manager(threading.Thread):
 		else:
 			return True
 
-	def services_stop(self, force=False):
+	def services_stop(self):
 		self._stop_time = time.time()
-		if self._service_is_running or force:
+		services_is_stop = True
+		for val in self._services_status.values():
+			if val == "RUNNING":
+				services_is_stop = False
+		if not services_is_stop:
+			print("################## stopping services ################## ")
 			services_sop = 0
 			for s in self._dest_services:
 				cmd1 = 'sc stop ' + s + '|find /I "STATE"'
@@ -387,6 +392,7 @@ class Manager(threading.Thread):
 					local_vnet_netmask = self.userinfo["gate_lan_netmask"]
 					if local_vnet_ip and is_ipv4(local_vnet_ip):
 						self.nps_changevk()
+						time.sleep(0.5)
 						self.wmi_in_thread(self.prepend_tap, "vnet", [local_vnet_ip], ["255.255.255.0"])
 						self.services_start()
 						gate_vnet_config = {"net": "bridge", "Address": self.userinfo['tunnel_host'],
@@ -404,12 +410,15 @@ class Manager(threading.Thread):
 								self._start_time = time.time()
 								return self._vnet_is_running, self.userinfo
 							else:
+								self.services_stop()
 								self.clean_cfg()
 								return False, "下发指令到网关不正常，请检查后重试"
 						else:
+							self.services_stop()
 							self.clean_cfg()
 							return False, "网关VPN服务启动不正常，请检查后重试"
 					else:
+						self.services_stop()
 						self.clean_cfg()
 						return False, "无法获取正确的本地Vnet IP，网关可能未安装应用，或未开启数据上传，请检查后重试"
 				else:
@@ -417,6 +426,7 @@ class Manager(threading.Thread):
 					self.clean_cfg()
 					return False, "网关不在线，或你无权访问此网关，请检查后重试"
 			else:
+				self.services_stop()
 				self.clean_cfg()
 				return False, "NPS连接错误或无此用户 {0} ".format(self.userinfo.get("name"))
 		else:
@@ -424,13 +434,13 @@ class Manager(threading.Thread):
 
 	def stop_vnet(self):
 		if self._vnet_is_running:
-			services_stop_ret = self.services_stop()
 			stop_datas = {"id": self.userinfo['gate'] + '/send_command/stop/' + str(time.time()),
 			              "device": self.userinfo['gate'],
 			              "data": {"device": self.userinfo['gate'] + ".freeioe_Vnet_npc", "cmd": "stop",
 			                       "param": {"net": "bridge"}}
 			              }
 			ret, gate_stop_ret = self.TRCloudapi.post_command_to_cloud(stop_datas)
+			services_stop_ret = self.services_stop()
 			if services_stop_ret and ret:
 				self.clean_cfg()
 				return True, {"stop_time": self._stop_time, "gate_stop_return": gate_stop_ret, "services_stop_return": services_stop_ret}
@@ -508,10 +518,7 @@ class Manager(threading.Thread):
 		# if APPCtrl().get_accesskey():
 		# 	self.TRAccesskey = APPCtrl().get_accesskey()
 		self.service_status()
-		if self._service_is_running:
-			self.services_stop(force=True)
-		else:
-			self._stop_time = time.time()
+		self.services_stop()
 		# print("@@@@@@@@@@@@@@@@@@@", self._appname, self.TRAccesskey)
 		threading.Thread.start(self)
 
@@ -568,16 +575,19 @@ class Manager(threading.Thread):
 	def enable_heartbeat(self, flag, timeout):
 		self._enable_heartbeat = flag
 		self._heartbeat_timeout = timeout + time.time()
-		alive_ret = self.keep_vnet_alive()
-		if alive_ret:
-			self.TRCloudapi.gate_enable_data_one_short(self.userinfo['gate'])
-			for i in range(4):
-				action_ret = self.TRCloudapi.get_action_result(alive_ret.get('message'))
-				if action_ret:
-					self._gate_online = True
-					break
-				time.sleep(i + 1)
-		return {"enable_heartbeat": self._enable_heartbeat, "heartbeat_timeout": self._heartbeat_timeout}
+		if self.TRCloudapi:
+			alive_ret = self.keep_vnet_alive()
+			if alive_ret:
+				self.TRCloudapi.gate_enable_data_one_short(self.userinfo['gate'])
+				for i in range(4):
+					action_ret = self.TRCloudapi.get_action_result(alive_ret.get('message'))
+					if action_ret:
+						self._gate_online = True
+						break
+					time.sleep(i + 1)
+			return {"enable_heartbeat": self._enable_heartbeat, "heartbeat_timeout": self._heartbeat_timeout}
+		else:
+			return {}
 
 	def keep_vnet_alive(self):
 		sn = self.userinfo['gate']

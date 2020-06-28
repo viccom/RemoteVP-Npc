@@ -435,16 +435,19 @@ class VSPAXManager(threading.Thread):
     def enable_heartbeat(self, flag, timeout):
         self._enable_heartbeat = flag
         self._heartbeat_timeout = time.time() + timeout
-        alive_ret = self.keep_vspax_alive()
-        if alive_ret:
-            self.TRCloudapi.gate_enable_data_one_short(self.userinfo['gate'])
-            for i in range(4):
-                action_ret = self.TRCloudapi.get_action_result(alive_ret.get('message'))
-                if action_ret:
-                    self.userinfo['gate_status'] = "ONLINE"
-                    break
-                time.sleep(i + 1)
-        return {"enable_heartbeat": self._enable_heartbeat, "heartbeat_timeout": self._heartbeat_timeout}
+        if self.TRCloudapi:
+            alive_ret = self.keep_vspax_alive()
+            if alive_ret:
+                self.TRCloudapi.gate_enable_data_one_short(self.userinfo['gate'])
+                for i in range(4):
+                    action_ret = self.TRCloudapi.get_action_result(alive_ret.get('message'))
+                    if action_ret:
+                        self.userinfo['gate_status'] = "ONLINE"
+                        break
+                    time.sleep(i + 1)
+            return {"enable_heartbeat": self._enable_heartbeat, "heartbeat_timeout": self._heartbeat_timeout}
+        else:
+            return {}
 
     def keep_vspax_alive(self):
         if self.userinfo['gate']:

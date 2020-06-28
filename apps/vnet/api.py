@@ -154,7 +154,7 @@ def api_status():
 def api_start(params: vnetItem):
 	if not type(params) is dict:
 		params = params.dict()
-	print(json.dumps(params, sort_keys=True, indent=4, separators=(',', ':')))
+	# print(json.dumps(params, sort_keys=True, indent=4, separators=(',', ':')))
 	id = params.get("id") or uuid.uuid1()
 	host = params.get("host")
 	user = params.get("user")
