@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>RemoteVP - 帮助</title>
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
+    <link rel="icon" href="static/imgs/favicon.ico">
+    <link rel="stylesheet" href="static/mdui/css/mdui.min.css">
+
+    <style>
+        p{ line-height: 200%; padding:0px; margin:0px; }
+    </style>
+</head>
+
+<body class="mdui-appbar-with-toolbar mdui-theme-primary-teal mdui-theme-accent-light-blue mdui-loaded mdui-drawer-body-left">
+
+    <!--顶部栏 start-->
+    <header class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-theme">
+            <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white"
+                  mdui-drawer="{target: '#main-drawer', swipe: true}"><i class="mdui-icon material-icons">menu</i></span>
+            <a href="./" class="mdui-typo-headline mdui-hidden-xs">Control Pannel</a>
+            <span class="mdui-typo-title">虚拟网络</span>
+            <div class="mdui-toolbar-spacer"></div>
+
+
+        </div>
+
+    </header>
+    <!--顶部栏 end-->
+
+    <!--左侧导航 start-->
+    <div class="mdui-drawer" id="main-drawer">
+        <div class="mdui-list" mdui-collapse="{accordion: true}">
+            <div class="mdui-collapse-item mdui-collapse-item-open">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">settings</i>
+                    <div class="mdui-list-item-content">远程编程</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vnet" class="mdui-list-item mdui-ripple home-menu1"
+                          data-id="home-menu1">虚拟网络</a>
+                    <a href="/vserial" class="mdui-list-item mdui-ripple home-menu2" data-id="home-menu2">虚拟串口</a>
+                </div>
+            </div>
+            <!--</div>-->
+
+        </div>
+
+        <div class="mdui-list" mdui-collapse="{accordion: true}">
+            <div class="mdui-collapse-item mdui-collapse-item-open">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">live_help</i>
+                    <div class="mdui-list-item-content">帮助说明</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vnet-guide" class="mdui-list-item mdui-ripple menu-guide" data-id="menu-guide">Vnet</a>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vser-guide" class="mdui-list-item mdui-ripple menu-guide" data-id="menu-guide">Vserial</a>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/docs" target="_blank" class="mdui-list-item mdui-ripple" data-id="menu-guide">API测试</a>
+                </div>
+            </div>
+            <!--</div>-->
+
+        </div>
+
+    </div>
+    <!--左侧导航 end-->
+
+    <!--主视图 Start-->
+    <div class="mdui-container" style="margin-top: 10px; padding: 0px">
+
+        <div class="marked-content"></div>
+
+    </div>
+    <!--主视图 End-->
+
+    <p></p>
+
+</body>
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="static/js/jquery-3.3.1.min.js"></script>
+<script src="static/mdui/js/mdui.min.js"></script>
+<script src="static/js/marked.min.js"></script>
+
+  <script>
+    $.get('static/help/vnet-guide.md', function(data) {
+
+      $('div.marked-content').html(marked(data));
+
+    });
+  </script>
+
+</html>

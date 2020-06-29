@@ -76,14 +76,24 @@ def get_application() -> FastAPI:
 	# 	return PlainTextResponse('Micro Service is running\n')
 
 	@application.get("/vnet")
-	async def index(request: Request):
+	async def vnet(request: Request):
 		# print(request.body())
 		return templates.TemplateResponse('vnet.html', {'request': request})
 
 	@application.get("/vserial")
-	async def index(request: Request):
+	async def vserial(request: Request):
 		# print(request.body())
 		return templates.TemplateResponse('vserial.html', {'request': request})
+
+	@application.get("/vnet-guide")
+	async def guide(request: Request):
+		# print(request.body())
+		return templates.TemplateResponse('vnet-guide.html', {'request': request})
+
+	@application.get("/vser-guide")
+	async def guide(request: Request):
+		# print(request.body())
+		return templates.TemplateResponse('vser-guide.html', {'request': request})
 
 	@application.post("/authcode")
 	async def authcode(params: authItem):

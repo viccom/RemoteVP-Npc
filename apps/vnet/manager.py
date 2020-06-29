@@ -512,16 +512,6 @@ class Manager(threading.Thread):
 		return ret, gate_action_ret
 
 
-	def start(self):
-		# self._download = VNETdownload(self)
-		# self._download.start()
-		# if APPCtrl().get_accesskey():
-		# 	self.TRAccesskey = APPCtrl().get_accesskey()
-		self.service_status()
-		self.services_stop()
-		# print("@@@@@@@@@@@@@@@@@@@", self._appname, self.TRAccesskey)
-		threading.Thread.start(self)
-
 	def run(self):
 		check_ip_alive_ret = None
 		while not self._thread_stop:
@@ -596,6 +586,14 @@ class Manager(threading.Thread):
 		         "data": {"device": sn + ".freeioe_Vnet_npc", "output": 'heartbeat_timeout', "value": 60,
 		                  "prop": "value"}}
 		return self.TRCloudapi.action_send_output(datas)
+
+	def start(self):
+		# self._download = VNETdownload(self)
+		# self._download.start()
+		self.service_status()
+		self.services_stop()
+		# print("@@@@@@@@@@@@@@@@@@@", self._appname, self.TRAccesskey)
+		threading.Thread.start(self)
 
 	def stop(self):
 		# self._download.stop()

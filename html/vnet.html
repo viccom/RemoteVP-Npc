@@ -105,13 +105,15 @@
 
     <!--左侧导航 start-->
     <div class="mdui-drawer" id="main-drawer">
+
         <div class="mdui-list" mdui-collapse="{accordion: true}">
             <div class="mdui-collapse-item mdui-collapse-item-open">
                 <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
                     <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">settings</i>
-                    <div class="mdui-list-itaem-content">远程编程</div>
+                    <div class="mdui-list-item-content">远程编程</div>
                     <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
                 </div>
+
                 <div class="mdui-collapse-item-body mdui-list">
                     <a href="/vnet" class="mdui-list-item mdui-ripple home-menu1 mdui-list-item-active"
                           data-id="home-menu1">虚拟网络</a>
@@ -122,6 +124,26 @@
 
         </div>
 
+        <div class="mdui-list" mdui-collapse="{accordion: true}">
+            <div class="mdui-collapse-item mdui-collapse-item-open">
+                <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">live_help</i>
+                    <div class="mdui-list-item-content">帮助说明</div>
+                    <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vnet-guide" class="mdui-list-item mdui-ripple menu-guide" data-id="menu-guide">Vnet</a>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/vser-guide" class="mdui-list-item mdui-ripple menu-guide" data-id="menu-guide">Vserial</a>
+                </div>
+                <div class="mdui-collapse-item-body mdui-list">
+                    <a href="/docs" target="_blank" class="mdui-list-item mdui-ripple" data-id="menu-guide">API测试</a>
+                </div>
+            </div>
+            <!--</div>-->
+
+        </div>
 
     </div>
     <!--左侧导航 end-->
@@ -180,7 +202,7 @@
                             <td width="8%"><span class="gate_ready"></span></td>
                             <td width="15%">本地Vnet环境：</td>
                             <td width="8%"><span class="local_ready"></span></td>
-                            <td width="6%"><button type="button" class="mdui-btn  mdui-btn-icon mqtt-connect-btn"><i class="mdui-icon material-icons mdui-color-grey">highlight</i></button></td>
+                            <td width="6%"><button type="button" class="mdui-btn  mdui-btn-icon mqtt-connect-btn"  mdui-tooltip="{content: '连接/断开'}"><i class="mdui-icon material-icons mdui-color-grey">highlight</i></button></td>
                         </tr>
                         </tbody>
                     </table>
