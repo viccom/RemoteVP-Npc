@@ -16,11 +16,12 @@ from conf import nps_allowed_ports
 from helper import is_ipv4, APPCtrl
 from helper.npsManager import npsCryp, npsApiv1
 from helper.thingscloud import CloudApiv1
-
+from apps.vnet.speedbench import SpeedBench
 
 class Manager(threading.Thread):
 	def __init__(self, appname, stream_pub):
 		threading.Thread.__init__(self)
+		self._bench = None
 		self.TRAccesskey = None
 		self.TRCloudapi = None
 		self.nps_host = None
@@ -587,16 +588,26 @@ class Manager(threading.Thread):
 		                  "prop": "value"}}
 		return self.TRCloudapi.action_send_output(datas)
 
+	def speed_bench(self, host, port, size, direct):
+		if not self._bench._start_bench:
+			self._bench.start_bench(host, port, size, direct)
+			return 'start SpeedBench!'
+		else:
+			return 'is proceeding'
+
+	def get_bench(self):
+		return self._bench.get_result()
+
 	def start(self):
-		# self._download = VNETdownload(self)
-		# self._download.start()
+		self._bench = SpeedBench(self)
+		self._bench.start()
 		self.service_status()
 		self.services_stop()
 		# print("@@@@@@@@@@@@@@@@@@@", self._appname, self.TRAccesskey)
 		threading.Thread.start(self)
 
 	def stop(self):
-		# self._download.stop()
+		self._bench.stop()
 		self._thread_stop = True
 		self.join()
 

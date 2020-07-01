@@ -301,6 +301,35 @@
                         <td>Ping 目标 IP 反馈：</td>
                         <td><span class="pingdestip"></span></td>
                     </tr>
+                    <tr>
+                        <td>测试数据：</td>
+                        <td>
+                            <select class="mdui-select data-size">
+                                <option value="1" selected>1M</option>
+                                <option value="2">2M</option>
+                                <option value="5">5M</option>
+                                <option value="10">10M</option>
+                                <option value="20">20M</option>
+                                <option value="50">50M</option>
+                            </select>
+                        </td>
+                        <td>测试方向：</td>
+                        <td>
+                            <select class="mdui-select bench-direct">
+                              <option value="upload" selected>本机→网关</option>
+                              <option value="download">网关→本机</option>
+                            </select>
+                            <button type="button" class="mdui-btn  mdui-btn-icon mdui-float-right bench-btn" data-id="0" mdui-tooltip="{content: '带宽测试'}">
+                                <i class="mdui-icon material-icons mdui-color-green">play_arrow</i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>本机→网关：</td>
+                        <td><span class="upload-bw"></span></td>
+                        <td>网关→本机：</td>
+                        <td><span class="download-bw"></span></td>
+                    </tr>
                     </tbody>
                 </table>
                 <table class="mdui-table vnetNotie mdui-hidden" style="margin-top: 0px; padding: 0px">
@@ -435,6 +464,12 @@
         }
     });
 
+    $('button.bench-btn').click(function () {
+        console.log($(this).data("id"));
+        if($(this).data("id")=="0") {
+            start_bench();
+        }
+    });
 </script>
 
 </html>

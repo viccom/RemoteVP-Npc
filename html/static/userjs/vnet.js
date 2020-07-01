@@ -55,6 +55,8 @@ var vnet_ret= setInterval(function(){
             $("span.localvnetip").text("UNKNOWN");
             $("span.gatelanip").text("UNKNOWN");
             $("span.pingdestip").text("UNKNOWN");
+            $("span.upload-bw").text("");
+            $("span.download-bw").text("");
         }
     }else{
         $("span.localvnetstatus").text("UNKNOWN");
@@ -63,6 +65,8 @@ var vnet_ret= setInterval(function(){
         $("span.localvnetip").text("UNKNOWN");
         $("span.gatelanip").text("UNKNOWN");
         $("span.pingdestip").text("UNKNOWN");
+        $("span.upload-bw").text("");
+        $("span.download-bw").text("");
     }
 
     },2000);
@@ -340,5 +344,72 @@ function remove_user_config() {
         mdui.snackbar({
           message: '后台服务未连接！'
         });
+    }
+}
+
+/**
+ *	start_bench
+ */
+function start_bench() {
+    if(mqttc_connected){
+        if(vnet_is_running){
+            mdui.snackbar({
+              message: '测试本地与远程网关之间的带宽！'
+            });
+            var host = $("span.gatelanip").text();
+            if(!isEmpty(host)){
+                var port = 5501;
+                var size = parseInt($("select.data-size").val());
+                var direct = $("select.bench-direct").val()
+                var bench_data = {
+                    "id": 'vnet/bench/' + clientId + '/' + Date.parse(new Date()).toString(),
+                    "host": host,
+                    "port": port,
+                    "size": size,
+                    "direct": direct
+                };
+                var message = new Paho.Message(JSON.stringify(bench_data));
+                message.destinationName = 'v1/vnet/api/bench';
+                message.qos = 0;
+                mqtt_client.send(message);
+                $('button.bench-btn').data("id", host);
+
+                $("span.upload-bw").text("带宽测试进行中……");
+                $("span.download-bw").text("带宽测试进行中……");
+                // localStorage.setItem("id", bench_data['id']);
+            }
+
+        }else{
+            mdui.snackbar({
+              message: 'Vnet未运行时不允许操作！'
+            });
+            return false;
+        }
+    }else{
+        mdui.snackbar({
+          message: '后台服务未连接！'
+        });
+        return false;
+    }
+}
+
+
+/**
+ *	check_bench_result
+ */
+function check_bench_result() {
+    if(mqttc_connected){
+        if(vnet_is_running){
+            mdui.snackbar({
+              message: '查询带宽测试结果！'
+            });
+            var check_result = {
+                "id": 'vnet/result/' + clientId + '/' + Date.parse(new Date()).toString()
+            };
+            var message = new Paho.Message(JSON.stringify(check_result));
+            message.destinationName = 'v1/vnet/api/result';
+            message.qos = 0;
+            mqtt_client.send(message);
+        }
     }
 }

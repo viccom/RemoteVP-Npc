@@ -49,6 +49,12 @@ class vnetItem(BaseModel):
 	auth_code: str = None
 	id: str = None
 
+class benchItem(BaseModel):
+	id: str = None
+	host: str
+	port: int
+	size: int = 10
+	direct: str = 'upload'
 
 @APIHandler.on_event("startup")
 async def startup():
@@ -204,3 +210,34 @@ def api_stop(params: stopItem):
 		return success(id, ret_content)
 	else:
 		return failure(id, ret_content)
+
+
+@APIHandler.post("/bench")
+def api_bench(params: benchItem):
+	if not type(params) is dict:
+		params = params.dict()
+	# print(json.dumps(params, sort_keys=True, indent=4, separators=(',', ':')))
+	id = params.get("id") or uuid.uuid1()
+	host = params.get("host")
+	port = params.get("port")
+	size = params.get("size")
+	direct = params.get("direct")
+	if not is_ipv4(host):
+		return failure(id, "host must be ipv4")
+	ret = APIHandler.Manager.speed_bench(host, port, size, direct)
+	if ret:
+		return success(id, ret)
+	else:
+		return failure(id, 'error')
+
+
+@APIHandler.get("/result")
+def api_result(params):
+	if not type(params) is dict:
+		params = to_dict(params)
+	id = params.get("id") or uuid.uuid1()
+	ret = APIHandler.Manager.get_bench()
+	if ret:
+		return success(id, ret)
+	else:
+		return failure(id, 'error')

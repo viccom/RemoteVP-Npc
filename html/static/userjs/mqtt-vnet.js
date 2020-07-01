@@ -317,6 +317,68 @@ function onMessageArrived(message) {
         if (apiResult_message['id'].indexOf("vnet/ping") != -1) {
             // set_api_result(apiResult_message);
         }
+
+        //------------------------------启动测试Vnet带宽 返回----------------------------------
+        if (apiResult_message['id'].indexOf("vnet/bench") != -1) {
+            set_api_result(apiResult_message);
+            if (apiResult_message.result) {
+                setTimeout(function () {
+                    check_bench_result();
+                }, 2000);
+            }
+        }
+
+        //------------------------------查询带宽测试 返回----------------------------------
+        if (apiResult_message['id'].indexOf("vnet/result") != -1) {
+            set_api_result(apiResult_message);
+            if (apiResult_message.result) {
+                if (!apiResult_message.data.result) {
+                    setTimeout(function () {
+                        check_bench_result();
+                    }, 5000);
+                }else{
+                    if (typeof apiResult_message.data.data == "object") {
+                        var host = $("span.gatelanip").text();
+                        var benchret = apiResult_message.data.data;
+                        if(benchret['host'] == host){
+                            var upload_html = "";
+                            var download_html = "";
+                            if(benchret['data']){
+                                var sum_received = benchret['data']['end']['sum_received']['bytes'];
+                                var sec_received = benchret['data']['end']['sum_received']['seconds'];
+                                var vnet_bw = sum_received / sec_received;
+
+                                if (benchret['dir'] == 'upload') {
+                                    if (vnet_bw > 1000000) {
+                                        upload_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + (vnet_bw / 1000000).toPrecision(3).toString() + "MB/S";
+                                    } else if (vnet_bw > 1000) {
+                                        upload_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + (vnet_bw / 1000).toPrecision(3).toString() + "KB/S";
+                                    } else {
+                                        upload_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + vnet_bw.toPrecision(3).toString() + "B/S";
+                                    }
+                                } else {
+                                    if (vnet_bw > 1000000) {
+                                        download_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + (vnet_bw / 1000000).toPrecision(3).toString() + "MB/S";
+                                    } else if (vnet_bw > 1000) {
+                                        download_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + (vnet_bw / 1000).toPrecision(3).toString() + "KB/S";
+                                    } else {
+                                        download_html = "耗时: " + Math.round(sec_received).toString() + "S 平均速率：" + vnet_bw.toPrecision(3).toString() + "B/S";
+                                    }
+                                }
+                            }
+
+                            $("span.upload-bw").text(upload_html);
+                            $("span.download-bw").text(download_html);
+                        }
+
+                    }
+                    $('button.bench-btn').data("id", '0')
+                }
+
+            }
+
+        }
+
         //----------------------------------------------------------------
 
     }
