@@ -49,4 +49,4 @@
 
     hiddenimports=['idna', 'apps.common.app', 'apps.vnet.app', 'apps.vserial.app', 'pkg_resources.py2_warn', 'uvicorn.loops', 'uvicorn.loops.auto', 'uvicorn.protocols', 'uvicorn.protocols.http', 'uvicorn.protocols.http.auto', 'uvicorn.protocols.websockets', 'uvicorn.protocols.websockets.auto', 'uvicorn.lifespan.auto', 'uvicorn.lifespan', 'uvicorn.lifespan.on', 'uvicorn.logging'],
 
-3. 再次运行 pyinstaller.exe -F main.spec 即可获得编译可用的二进制文件。
+3. 再次运行 pyinstaller.exe -F main.spec 即可获得可用的二进制文件。
